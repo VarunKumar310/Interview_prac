@@ -6,7 +6,10 @@ import VideoBackground from "../components/VideoBackground.jsx";
 
 export default function BuildResume() {
   const navigate = useNavigate();
-  const { setBuiltResume, setResumeText } = useInterview();
+  const { setBuiltResume, setResumeText, experience } = useInterview();
+  
+  // Check if user is a fresher (selected "0" in experience)
+  const isFresher = experience === "0";
 
   const [form, setForm] = useState({
     name: "",
@@ -64,90 +67,116 @@ export default function BuildResume() {
     y += 12;
 
     doc.setFontSize(12);
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(0, 0, 0); // Black text for contact info
     doc.text(`${form.email} | ${form.phone}`, 105, y, { align: "center" });
     y += 20;
 
     const addSection = (title) => {
-      doc.setFontSize(18);
+      doc.setFontSize(16);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(34, 211, 238);
+      doc.setTextColor(34, 134, 238); // Darker cyan for better visibility
       doc.text(title, 20, y);
-      y += 10;
+      y += 8;
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(0, 0, 0); // Black text for content
     };
 
     // Education
-    if (form.education.some(e => e.degree)) {
+    if (form.education.some(e => e.degree && e.degree.trim())) {
       addSection("EDUCATION");
       form.education.forEach(edu => {
-        if (edu.degree) {
-          doc.text(`${edu.degree} - ${edu.institution}`, 20, y);
-          doc.setFont("helvetica", "italic");
-          doc.text(edu.year, 20, y + 5);
+        if (edu.degree && edu.degree.trim()) {
+          doc.setFont("helvetica", "bold");
+          doc.text(`${edu.degree}`, 20, y);
           doc.setFont("helvetica", "normal");
-          y += 12;
+          if (edu.institution) {
+            doc.text(`${edu.institution}`, 20, y + 5);
+          }
+          if (edu.year) {
+            doc.setFont("helvetica", "italic");
+            doc.text(`(${edu.year})`, 20, y + 10);
+            doc.setFont("helvetica", "normal");
+          }
+          y += 18;
         }
       });
+      y += 5;
     }
 
     // Skills
     if (form.skills.some(s => s.trim())) {
       addSection("SKILLS");
       const skillsText = form.skills.filter(s => s.trim()).join(" • ");
-      doc.text(skillsText, 20, y);
-      y += 12;
+      const skillsLines = doc.splitTextToSize(skillsText, 170);
+      doc.text(skillsLines, 20, y);
+      y += skillsLines.length * 5 + 8;
     }
 
-    // Experience
-    if (form.experience.some(e => e.role)) {
+    // Experience (skip for freshers)
+    if (!isFresher && form.experience.some(e => e.role && e.role.trim())) {
       addSection("EXPERIENCE");
       form.experience.forEach(exp => {
-        if (exp.role) {
+        if (exp.role && exp.role.trim()) {
           doc.setFont("helvetica", "bold");
-          doc.text(`${exp.role} at ${exp.company}`, 20, y);
+          doc.text(`${exp.role}${exp.company ? ` at ${exp.company}` : ''}`, 20, y);
           doc.setFont("helvetica", "italic");
-          doc.text(exp.duration, 20, y + 6);
+          if (exp.duration) {
+            doc.text(exp.duration, 20, y + 5);
+          }
           doc.setFont("helvetica", "normal");
-          const details = doc.splitTextToSize(exp.details || "", 170);
-          doc.text(details, 20, y + 12);
-          y += details.length * 6 + 15;
+          if (exp.details && exp.details.trim()) {
+            const details = doc.splitTextToSize(exp.details, 170);
+            doc.text(details, 20, y + 10);
+            y += details.length * 5 + 15;
+          } else {
+            y += 15;
+          }
         }
       });
+      y += 5;
     }
 
     // Projects
-    if (form.projects.some(p => p.title)) {
+    if (form.projects.some(p => p.title && p.title.trim())) {
       addSection("PROJECTS");
       form.projects.forEach(p => {
-        if (p.title) {
+        if (p.title && p.title.trim()) {
           doc.setFont("helvetica", "bold");
           doc.text(p.title, 20, y);
           doc.setFont("helvetica", "normal");
-          const desc = doc.splitTextToSize(p.description || "", 170);
-          doc.text(desc, 25, y + 8);
-          y += desc.length * 6 + 15;
+          if (p.description && p.description.trim()) {
+            const desc = doc.splitTextToSize(p.description, 170);
+            doc.text(desc, 20, y + 5);
+            y += desc.length * 5 + 12;
+          } else {
+            y += 8;
+          }
         }
       });
+      y += 5;
     }
 
-    // Certifications & Achievements
-    if (form.certifications.some(c => c)) {
+    // Certifications
+    if (form.certifications.some(c => c && c.trim())) {
       addSection("CERTIFICATIONS");
-      form.certifications.filter(c => c).forEach(c => {
-        doc.text(`• ${c}`, 20, y);
-        y += 7;
+      form.certifications.filter(c => c && c.trim()).forEach(c => {
+        const certLines = doc.splitTextToSize(`• ${c}`, 170);
+        doc.text(certLines, 20, y);
+        y += certLines.length * 5 + 3;
       });
+      y += 5;
     }
 
-    if (form.achievements.some(a => a)) {
+    // Achievements
+    if (form.achievements.some(a => a && a.trim())) {
       addSection("ACHIEVEMENTS");
-      form.achievements.filter(a => a).forEach(a => {
-        doc.text(`• ${a}`, 20, y);
-        y += 7;
+      form.achievements.filter(a => a && a.trim()).forEach(a => {
+        const achieveLines = doc.splitTextToSize(`• ${a}`, 170);
+        doc.text(achieveLines, 20, y);
+        y += achieveLines.length * 5 + 3;
       });
+      y += 5;
     }
 
     doc.save("My_Resume.pdf");
@@ -203,17 +232,32 @@ export default function BuildResume() {
         ))}
         <button onClick={() => addArrayField("skills", "")} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Skill</button>
 
-        {/* EXPERIENCE */}
-        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Experience</h2>
-        {form.experience.map((exp, i) => (
-          <div key={i} className="space-y-3 mb-6 p-4 bg-black/20 rounded-xl border border-cyan-400/30">
-            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Role" value={exp.role} onChange={(e) => updateNestedField("experience", i, "role", e.target.value)} />
-            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Company" value={exp.company} onChange={(e) => updateNestedField("experience", i, "company", e.target.value)} />
-            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Duration (e.g., Jan 2023 - Present)" value={exp.duration} onChange={(e) => updateNestedField("experience", i, "duration", e.target.value)} />
-            <textarea className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40 h-24" placeholder="Key responsibilities and achievements..." value={exp.details} onChange={(e) => updateNestedField("experience", i, "details", e.target.value)} />
+        {/* EXPERIENCE - Hidden for freshers */}
+        {!isFresher && (
+          <>
+            <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Experience</h2>
+            {form.experience.map((exp, i) => (
+              <div key={i} className="space-y-3 mb-6 p-4 bg-black/20 rounded-xl border border-cyan-400/30">
+                <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Role" value={exp.role} onChange={(e) => updateNestedField("experience", i, "role", e.target.value)} />
+                <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Company" value={exp.company} onChange={(e) => updateNestedField("experience", i, "company", e.target.value)} />
+                <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Duration (e.g., Jan 2023 - Present)" value={exp.duration} onChange={(e) => updateNestedField("experience", i, "duration", e.target.value)} />
+                <textarea className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40 h-24" placeholder="Key responsibilities and achievements..." value={exp.details} onChange={(e) => updateNestedField("experience", i, "details", e.target.value)} />
+              </div>
+            ))}
+            <button onClick={() => addNestedField("experience", { role: "", company: "", duration: "", details: "" })} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Experience</button>
+          </>
+        )}
+
+        {/* Message for freshers */}
+        {isFresher && (
+          <div className="mt-8 p-6 bg-cyan-900/20 backdrop-blur-sm border border-cyan-400/40 rounded-lg">
+            <h2 className="text-xl font-bold mb-2 text-cyan-300">Experience Section</h2>
+            <p className="text-gray-300">
+              Since you selected "Fresher" as your experience level, the experience section has been automatically skipped. 
+              Focus on highlighting your education, skills, projects, and achievements!
+            </p>
           </div>
-        ))}
-        <button onClick={() => addNestedField("experience", { role: "", company: "", duration: "", details: "" })} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Experience</button>
+        )}
 
         {/* CERTIFICATIONS */}
         <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Certifications</h2>
