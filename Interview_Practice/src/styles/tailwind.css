@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Scanline effect (moves top to bottom) */
+  @keyframes scan {
+    0% { transform: translateY(-200%); }
+    100% { transform: translateY(200%); }
+  }
+  .animate-scan {
+    animation: scan 4s linear infinite;
+  }
+  .animate-scan-delayed {
+    animation: scan 4s linear infinite 1.5s;
+  }
+
+  /* Floating particles */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    50% { transform: translateY(-30px) translateX(10px) rotate(15deg); }
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-delay {
+    animation: float 5s ease-in-out infinite 2s;
+  }
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite 3s;
+  }
+}
