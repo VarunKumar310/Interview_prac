@@ -62,10 +62,10 @@ const RoleSelector = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-10">
       <VideoBackground />
-      <div className="bg-white/10 backdrop-blur-lg border border-white/20 w-full max-w-3xl p-8 rounded-xl shadow-2xl">"
+      <div className="bg-black/60 backdrop-blur-md border border-cyan-400/40 w-full max-w-3xl p-8 rounded-xl shadow-2xl relative z-10">"
         
         {/* Heading */}
-        <h1 className="text-2xl font-bold text-center text-white mb-6">
+        <h1 className="text-2xl font-bold text-center text-cyan-300 mb-6">
           Select Your Job Role
         </h1>
 
@@ -75,7 +75,7 @@ const RoleSelector = () => {
           placeholder="Search job roles..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          className="w-full mb-6 px-4 py-2 bg-black/30 backdrop-blur-sm border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300"
         />
 
         {/* Grid of Roles */}
@@ -90,8 +90,8 @@ const RoleSelector = () => {
                 className={`p-4 border rounded-lg text-left font-medium transition-all shadow-sm backdrop-blur-sm
                   ${
                     selectedRole === role
-                      ? "bg-blue-600/80 text-white border-blue-400 shadow-lg" // Selected style: semi-transparent blue
-                      : "bg-white/15 hover:bg-white/25 border-white/30 text-white" // Unselected style: transparent with white text
+                      ? "bg-cyan-600/70 text-white border-cyan-400 shadow-lg" // Selected style: cyan theme
+                      : "bg-black/30 hover:bg-black/40 border-cyan-400/30 text-gray-200 hover:border-cyan-400/60" // Unselected: dark with cyan accents
                   }`}
               >
                 {role}
@@ -106,7 +106,7 @@ const RoleSelector = () => {
         {/* Continue Button */}
         <button
           onClick={handleContinue}
-          className="w-full mt-6 py-3 bg-blue-600/80 backdrop-blur-sm border border-blue-400/50 text-white font-semibold rounded-lg hover:bg-blue-500/90 transition-all shadow-lg"
+          className="w-full mt-6 py-3 bg-cyan-600/70 backdrop-blur-sm border border-cyan-400/60 text-white font-semibold rounded-lg hover:bg-cyan-500/80 hover:border-cyan-300 transition-all shadow-lg"
         >
           Continue
         </button>

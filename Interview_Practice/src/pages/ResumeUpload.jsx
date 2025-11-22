@@ -63,12 +63,12 @@ export default function ResumeUpload() {
     <VideoBackground overlay={true} overlayOpacity={0.6}>
       <div className="min-h-screen text-white flex items-center justify-center p-8">
         <div className="max-w-4xl w-full text-center">
-        <h1 className="text-7xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+        <h1 className="text-6xl font-bold mb-8 text-cyan-300">
           Upload Your Resume
         </h1>
 
         <div
-          className="border-4 border-dashed border-cyan-400/60 bg-white/5 backdrop-blur-lg rounded-3xl p-20 hover:border-cyan-300 hover:bg-white/10 transition-all cursor-pointer relative"
+          className="border-4 border-dashed border-cyan-400/60 bg-black/30 backdrop-blur-md rounded-3xl p-20 hover:border-cyan-300 hover:bg-black/40 transition-all cursor-pointer relative"
           onDrop={(e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
           onDragOver={(e) => e.preventDefault()}
         >

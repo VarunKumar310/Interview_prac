@@ -37,12 +37,12 @@ const ExperienceSelector = () => {
   };
 
   return (
-    <VideoBackground>
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-white/90 backdrop-blur-lg w-full max-w-xl p-8 rounded-xl shadow-2xl border border-white/20">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <VideoBackground />
+      <div className="bg-black/60 backdrop-blur-md border border-cyan-400/40 w-full max-w-xl p-8 rounded-xl shadow-2xl relative z-10">
         
         {/* Title */}
-        <h1 className="text-2xl font-bold text-center text-white mb-6">
+        <h1 className="text-2xl font-bold text-center text-cyan-300 mb-6">
           Select Your Experience Level
         </h1>
 
@@ -55,8 +55,8 @@ const ExperienceSelector = () => {
               className={`p-4 border rounded-lg text-center font-medium transition-all backdrop-blur-sm
                 ${
                   selectedExp === item.value
-                    ? "bg-blue-600/80 text-white border-blue-400 shadow-lg" // Selected: semi-transparent blue
-                    : "bg-white/15 hover:bg-white/25 border-white/30 text-white" // Unselected: transparent with white text
+                    ? "bg-cyan-600/70 text-white border-cyan-400 shadow-lg" // Selected: cyan theme
+                    : "bg-black/30 hover:bg-black/40 border-cyan-400/30 text-gray-200 hover:border-cyan-400/60" // Unselected: dark with cyan accents
                 }
               `}
             >
@@ -71,13 +71,12 @@ const ExperienceSelector = () => {
         {/* Continue Button */}
         <button
           onClick={handleContinue}
-          className="w-full mt-6 py-3 bg-blue-600/80 backdrop-blur-sm border border-blue-400/50 text-white font-semibold rounded-lg hover:bg-blue-500/90 transition-all shadow-lg"
+          className="w-full mt-6 py-3 bg-cyan-600/70 backdrop-blur-sm border border-cyan-400/60 text-white font-semibold rounded-lg hover:bg-cyan-500/80 hover:border-cyan-300 transition-all shadow-lg"
         >
           Continue
         </button>
-        </div>
       </div>
-    </VideoBackground>
+    </div>
   );
 };
 

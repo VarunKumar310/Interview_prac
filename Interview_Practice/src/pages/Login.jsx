@@ -38,12 +38,12 @@ const Login = () => {
   };
 
   return (
-    <VideoBackground>
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-white/90 backdrop-blur-lg w-full max-w-md p-8 rounded-xl shadow-2xl border border-white/20">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <VideoBackground />
+      <div className="bg-black/60 backdrop-blur-md border border-cyan-400/40 w-full max-w-md p-8 rounded-xl shadow-2xl relative z-10">
         
         {/* Logo / Title */}
-        <h1 className="text-2xl font-bold text-center mb-6 text-white">
+        <h1 className="text-2xl font-bold text-center mb-6 text-cyan-300">
           Interview Practice Partner
         </h1>
 
@@ -60,7 +60,7 @@ const Login = () => {
               placeholder="your email@gmail.com"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/30"
+              className="w-full px-4 py-2 bg-black/30 backdrop-blur-sm border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300 focus:bg-black/40"
               required
             />
           </div>
@@ -76,7 +76,7 @@ const Login = () => {
               placeholder="••••••••"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/30"
+              className="w-full px-4 py-2 bg-black/30 backdrop-blur-sm border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300 focus:bg-black/40"
               required
             />
           </div>
@@ -98,21 +98,20 @@ const Login = () => {
 
         {/* Divider */}
         <div className="my-6 flex items-center justify-center">
-          <div className="border-t border-white/30 w-1/3"></div>
-          <span className="mx-2 text-white/70">or</span>
-          <div className="border-t border-white/30 w-1/3"></div>
+          <div className="border-t border-cyan-400/30 w-1/3"></div>
+          <span className="mx-2 text-cyan-200">or</span>
+          <div className="border-t border-cyan-400/30 w-1/3"></div>
         </div>
 
         {/* Guest Mode */}
         <button
           onClick={() => navigate("/role")}
-          className="w-full py-2 border border-white/30 text-white font-medium rounded-lg hover:bg-white/10 transition backdrop-blur-sm"
+          className="w-full py-3 border border-cyan-400/50 text-cyan-200 font-medium rounded-lg hover:bg-cyan-400/10 hover:border-cyan-300 transition backdrop-blur-sm"
         >
           Continue as Guest
         </button>
-        </div>
       </div>
-    </VideoBackground>
+    </div>
   );
 };
 

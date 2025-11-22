@@ -30,8 +30,8 @@ const VideoBackground = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-black"></div>
       )}
 
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/30"></div>
+      {/* Light overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/10"></div>
       
       {/* Subtle animated particles effect */}
       <div className="absolute inset-0 pointer-events-none">
