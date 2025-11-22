@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInterview } from "../utils/InterviewContext.jsx";
 import * as pdfjsLib from "pdfjs-dist";
+import VideoBackground from "../components/VideoBackground";
 
 // THIS LINE USES CDN — NO LOCAL FILE NEEDED
 pdfjsLib.GlobalWorkerOptions.workerSrc = 
@@ -59,14 +60,15 @@ export default function ResumeUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white flex items-center justify-center p-8">
-      <div className="max-w-4xl w-full text-center">
+    <VideoBackground overlay={true} overlayOpacity={0.6}>
+      <div className="min-h-screen text-white flex items-center justify-center p-8">
+        <div className="max-w-4xl w-full text-center">
         <h1 className="text-7xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
           Upload Your Resume
         </h1>
 
         <div
-          className="border-4 border-dashed border-cyan-500/50 rounded-3xl p-20 hover:border-cyan-400 transition-all cursor-pointer relative"
+          className="border-4 border-dashed border-cyan-400/60 bg-white/5 backdrop-blur-lg rounded-3xl p-20 hover:border-cyan-300 hover:bg-white/10 transition-all cursor-pointer relative"
           onDrop={(e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
           onDragOver={(e) => e.preventDefault()}
         >
@@ -85,30 +87,31 @@ export default function ResumeUpload() {
 
         {loading && (
           <div className="mt-10">
-            <div className="bg-gray-800 rounded-full h-4 overflow-hidden">
-              <div className="h-full bg-cyan-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-full h-4 overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300 shadow-lg" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-xl mt-2">{progress}%</p>
+            <p className="text-xl mt-2 font-semibold">{progress}%</p>
           </div>
         )}
 
-        {error && <p className="text-red-400 mt-8 text-xl">{error}</p>}
+        {error && <p className="text-red-300 mt-8 text-xl bg-red-900/20 backdrop-blur-sm px-4 py-3 rounded-lg border border-red-500/30 inline-block">{error}</p>}
 
         <div className="mt-16 space-x-8">
           <button
             onClick={() => { setResumeText("No resume"); navigate("/interview"); }}
-            className="px-12 py-5 bg-gray-700 hover:bg-gray-600 rounded-xl text-2xl font-bold"
+            className="px-12 py-5 bg-white/15 backdrop-blur-lg border border-white/30 hover:bg-white/25 rounded-xl text-2xl font-bold transition-all"
           >
             Skip
           </button>
           <button
             onClick={() => navigate("/build-resume")}
-            className="px-12 py-5 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl text-2xl font-bold"
+            className="px-12 py-5 bg-gradient-to-r from-cyan-500/80 to-purple-600/80 backdrop-blur-lg border border-cyan-400/50 hover:from-cyan-400/90 hover:to-purple-500/90 rounded-xl text-2xl font-bold transition-all"
           >
             Build Resume
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </VideoBackground>
   );
 }

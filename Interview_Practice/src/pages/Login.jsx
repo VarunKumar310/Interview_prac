@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
+import VideoBackground from "../components/VideoBackground";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,11 +38,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white w-full max-w-md p-8 rounded-xl shadow-lg">
+    <VideoBackground>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white/90 backdrop-blur-lg w-full max-w-md p-8 rounded-xl shadow-2xl border border-white/20">
         
         {/* Logo / Title */}
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
+        <h1 className="text-2xl font-bold text-center mb-6 text-white">
           Interview Practice Partner
         </h1>
 
@@ -49,23 +51,23 @@ const Login = () => {
 
           {/* Email Input */}
           <div>
-            <label className="block font-medium mb-1 text-gray-700">
+            <label className="block font-medium mb-1 text-white">
               Email
             </label>
             <input
               type="email"
               name="email"
-              placeholder="you@example.com"
+              placeholder="your email@gmail.com"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/30"
               required
             />
           </div>
 
           {/* Password Input */}
           <div>
-            <label className="block font-medium mb-1 text-gray-700">
+            <label className="block font-medium mb-1 text-white">
               Password
             </label>
             <input
@@ -74,14 +76,14 @@ const Login = () => {
               placeholder="••••••••"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/30"
               required
             />
           </div>
 
           {/* Error Display */}
           {error && (
-            <p className="text-red-600 text-sm font-medium">{error}</p>
+            <p className="text-red-300 text-sm font-medium bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-500/30">{error}</p>
           )}
 
           {/* Submit Button */}
@@ -96,20 +98,21 @@ const Login = () => {
 
         {/* Divider */}
         <div className="my-6 flex items-center justify-center">
-          <div className="border-t w-1/3"></div>
-          <span className="mx-2 text-gray-500">or</span>
-          <div className="border-t w-1/3"></div>
+          <div className="border-t border-white/30 w-1/3"></div>
+          <span className="mx-2 text-white/70">or</span>
+          <div className="border-t border-white/30 w-1/3"></div>
         </div>
 
         {/* Guest Mode */}
         <button
           onClick={() => navigate("/role")}
-          className="w-full py-2 border border-gray-400 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition"
+          className="w-full py-2 border border-white/30 text-white font-medium rounded-lg hover:bg-white/10 transition backdrop-blur-sm"
         >
           Continue as Guest
         </button>
+        </div>
       </div>
-    </div>
+    </VideoBackground>
   );
 };
 

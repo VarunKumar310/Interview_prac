@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useInterview } from "../utils/InterviewContext.jsx";
+import VideoBackground from "../components/VideoBackground";
 
 const difficultyLevels = [
   { label: "Easy", value: "easy", desc: "Basic-level questions" },
@@ -34,11 +35,12 @@ const DifficultySelector = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-xl p-8 rounded-xl shadow-lg">
+    <VideoBackground>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white/90 backdrop-blur-lg w-full max-w-xl p-8 rounded-xl shadow-2xl border border-white/20">
 
         {/* Heading */}
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        <h1 className="text-2xl font-bold text-center text-white mb-6">
           Select Difficulty Level
         </h1>
 
@@ -48,11 +50,11 @@ const DifficultySelector = () => {
             <button
               key={index}
               onClick={() => setSelectedDifficulty(item.value)}
-              className={`w-full p-4 border rounded-lg shadow-sm text-left transition-all
+              className={`w-full p-4 border rounded-lg shadow-sm text-left transition-all backdrop-blur-sm
                 ${
                   selectedDifficulty === item.value
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white hover:bg-blue-50 border-gray-300"
+                    ? "bg-blue-600/80 text-white border-blue-400 shadow-lg"
+                    : "bg-white/15 hover:bg-white/25 border-white/30 text-white"
                 }
               `}
             >
@@ -61,7 +63,7 @@ const DifficultySelector = () => {
                 className={`text-sm ${
                   selectedDifficulty === item.value
                     ? "text-blue-100"
-                    : "text-gray-600"
+                    : "text-white/80"
                 }`}
               >
                 {item.desc}
@@ -71,17 +73,18 @@ const DifficultySelector = () => {
         </div>
 
         {/* Error Message */}
-        {error && <p className="text-red-600 mt-3 text-center">{error}</p>}
+        {error && <p className="text-red-300 mt-3 text-center bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-500/30 inline-block">{error}</p>}
 
         {/* Continue Button */}
         <button
           onClick={handleContinue}
-          className="w-full mt-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          className="w-full mt-6 py-3 bg-blue-600/80 backdrop-blur-sm border border-blue-400/50 text-white font-semibold rounded-lg hover:bg-blue-500/90 transition-all shadow-lg"
         >
           Continue
         </button>
+        </div>
       </div>
-    </div>
+    </VideoBackground>
   );
 };
 
