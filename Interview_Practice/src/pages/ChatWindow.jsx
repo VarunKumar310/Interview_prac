@@ -13,6 +13,7 @@ import VideoBackground from "../components/VideoBackground";
 // Utils
 import { speak, playTypingSound, playDoneSound } from "../utils/audio";
 import { analyzeSpeech } from "../utils/speech";
+import { api } from "../api";
 
 // ===== Progress Bar =====
 const ProgressBar = ({ progress }) => (
@@ -47,15 +48,47 @@ export default function ChatWindow() {
   const recognitionRef = useRef(null);
   const scrollRef = useRef(null);
 
-  // Initialize messages and speak first question
+  // Initialize interview session and get first question
   useEffect(() => {
-    const welcomeMsg = "Welcome! Let's start your mock interview.";
-    setMessages([
-      { sender: "bot", text: welcomeMsg },
-      { sender: "bot", text: questions[0] }
-    ]);
-    addMessage("bot", welcomeMsg);
-    speakQuestion(questions[0]);
+    const initializeInterview = async () => {
+      try {
+        // Get first question from backend
+        const response = await api.getCurrentQuestion();
+        
+        if (response.success && response.question) {
+          const welcomeMsg = "Welcome! Let's start your mock interview.";
+          const firstQuestion = response.question.question;
+          
+          setMessages([
+            { sender: "bot", text: welcomeMsg },
+            { sender: "bot", text: firstQuestion }
+          ]);
+          addMessage("bot", welcomeMsg);
+          speakQuestion(firstQuestion);
+        } else {
+          // Fallback to local questions
+          const welcomeMsg = "Welcome! Let's start your mock interview.";
+          setMessages([
+            { sender: "bot", text: welcomeMsg },
+            { sender: "bot", text: questions[0] }
+          ]);
+          addMessage("bot", welcomeMsg);
+          speakQuestion(questions[0]);
+        }
+      } catch (error) {
+        console.error('Error initializing interview:', error);
+        // Fallback to local questions
+        const welcomeMsg = "Welcome! Let's start your mock interview.";
+        setMessages([
+          { sender: "bot", text: welcomeMsg },
+          { sender: "bot", text: questions[0] }
+        ]);
+        addMessage("bot", welcomeMsg);
+        speakQuestion(questions[0]);
+      }
+    };
+
+    initializeInterview();
   }, []);
 
   // Auto scroll to bottom
@@ -93,11 +126,11 @@ export default function ChatWindow() {
     });
   };
 
-  const handleUserResponse = (text) => {
+  const handleUserResponse = async (text) => {
     const cleanText = text.trim();
     if (!cleanText) return;
 
-    // Add to local and global state
+    // Add user message to UI
     setMessages(prev => [...prev, { sender: "user", text: cleanText }]);
     addMessage("user", cleanText);
 
@@ -112,7 +145,46 @@ export default function ChatWindow() {
 
     playDoneSound();
 
-    // Move to next question
+    try {
+      // Submit answer to backend and get next question
+      console.log('🔄 Submitting answer to backend:', cleanText);
+      const response = await api.submitInterviewAnswer(cleanText);
+      console.log('📥 Backend response:', response);
+      
+      if (response && response.success) {
+        if (response.completed) {
+          // Interview completed
+          console.log('✅ Interview completed');
+          setMessages(prev => [...prev, { sender: "bot", text: response.message || "Interview completed! Thank you for your time." }]);
+          setTimeout(() => navigate("/summary"), 1500);
+        } else if (response.question) {
+          // Got next question from backend
+          console.log('✅ Got next question from backend:', response.question.question);
+          setTimeout(() => {
+            const nextQuestion = response.question.question;
+            setMessages(prev => [...prev, { sender: "bot", text: nextQuestion }]);
+            addMessage("bot", nextQuestion);
+            setProgress(prev => Math.min(prev + 17, 100));
+            speakQuestion(nextQuestion);
+          }, 1000);
+        } else {
+          console.warn('⚠️ Backend returned success but no question, falling back');
+          handleLocalQuestionProgression();
+        }
+      } else {
+        // Backend API failed or returned error
+        console.warn('❌ Backend response failed, falling back to local logic:', response);
+        handleLocalQuestionProgression();
+      }
+    } catch (error) {
+      console.error('💥 Error submitting answer to backend:', error);
+      // Network or other error - use fallback
+      handleLocalQuestionProgression();
+    }
+  };
+
+  const handleLocalQuestionProgression = () => {
+    // Fallback local question progression
     setTimeout(() => {
       if (currentIndex < questions.length - 1) {
         const nextIndex = currentIndex + 1;
