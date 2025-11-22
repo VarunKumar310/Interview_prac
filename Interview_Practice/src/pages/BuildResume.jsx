@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
-import { useInterview } from "../utils/InterviewContext.jsx"; // CORRECTED
+import { useInterview } from "../utils/InterviewContext.jsx";
+import VideoBackground from "../components/VideoBackground.jsx";
 
 export default function BuildResume() {
   const navigate = useNavigate();
@@ -154,85 +155,86 @@ export default function BuildResume() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white p-6">
-      <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-cyan-500/30">
-        <h1 className="text-5xl font-bold text-center mb-10 text-cyan-300">Build Your Resume</h1>
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <VideoBackground />
+      <div className="bg-black/60 backdrop-blur-md border border-cyan-400/40 w-full max-w-4xl p-8 rounded-xl shadow-2xl relative z-10 max-h-[90vh] overflow-y-auto">
+        <h1 className="text-4xl font-bold text-center mb-8 text-cyan-300">Build Your Resume</h1>
 
         {/* BASIC INFO */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <input
             type="text"
             placeholder="Full Name"
-            className="p-4 bg-white/20 border border-cyan-500/50 rounded-xl placeholder-cyan-200 focus:outline-none focus:border-cyan-300"
+            className="p-3 bg-black/30 border border-cyan-400/50 rounded-lg placeholder-gray-300 text-white focus:outline-none focus:border-cyan-300 focus:bg-black/40"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
           />
           <input
             type="email"
             placeholder="Email"
-            className="p-4 bg-white/20 border border-cyan-500/50 rounded-xl placeholder-cyan-200 focus:outline-none focus:border-cyan-300"
+            className="p-3 bg-black/30 border border-cyan-400/50 rounded-lg placeholder-gray-300 text-white focus:outline-none focus:border-cyan-300 focus:bg-black/40"
             value={form.email}
             onChange={(e) => updateField("email", e.target.value)}
           />
           <input
             type="text"
             placeholder="Phone Number"
-            className="p-4 bg-white/20 border border-cyan-500/50 rounded-xl placeholder-cyan-200 focus:outline-none focus:border-cyan-300"
+            className="p-3 bg-black/30 border border-cyan-400/50 rounded-lg placeholder-gray-300 text-white focus:outline-none focus:border-cyan-300 focus:bg-black/40"
             value={form.phone}
             onChange={(e) => updateField("phone", e.target.value)}
           />
         </div>
 
         {/* EDUCATION */}
-        <h2 className="text-2xl font-bold mt-10 mb-4 text-cyan-300">Education</h2>
+        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Education</h2>
         {form.education.map((edu, i) => (
           <div key={i} className="grid md:grid-cols-3 gap-4 mb-4">
-            <input placeholder="Degree" className="p-3 bg-white/20 rounded-lg" value={edu.degree} onChange={(e) => updateNestedField("education", i, "degree", e.target.value)} />
-            <input placeholder="Institution" className="p-3 bg-white/20 rounded-lg" value={edu.institution} onChange={(e) => updateNestedField("education", i, "institution", e.target.value)} />
-            <input placeholder="Year" className="p-3 bg-white/20 rounded-lg" value={edu.year} onChange={(e) => updateNestedField("education", i, "year", e.target.value)} />
+            <input placeholder="Degree" className="p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" value={edu.degree} onChange={(e) => updateNestedField("education", i, "degree", e.target.value)} />
+            <input placeholder="Institution" className="p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" value={edu.institution} onChange={(e) => updateNestedField("education", i, "institution", e.target.value)} />
+            <input placeholder="Year" className="p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" value={edu.year} onChange={(e) => updateNestedField("education", i, "year", e.target.value)} />
           </div>
         ))}
         <button onClick={() => addNestedField("education", { degree: "", institution: "", year: "" })} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add More Education</button>
 
         {/* SKILLS */}
-        <h2 className="text-2xl font-bold mt-10 mb-4 text-cyan-300">Skills</h2>
+        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Skills</h2>
         {form.skills.map((s, i) => (
-          <input key={i} className="w-full p-3 mb-3 bg-white/20 rounded-lg" placeholder="e.g., React, Python, AWS" value={s} onChange={(e) => updateArrayField("skills", i, e.target.value)} />
+          <input key={i} className="w-full p-3 mb-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="e.g., React, Python, AWS" value={s} onChange={(e) => updateArrayField("skills", i, e.target.value)} />
         ))}
         <button onClick={() => addArrayField("skills", "")} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Skill</button>
 
         {/* EXPERIENCE */}
-        <h2 className="text-2xl font-bold mt-10 mb-4 text-cyan-300">Experience</h2>
+        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Experience</h2>
         {form.experience.map((exp, i) => (
-          <div key={i} className="space-y-3 mb-6 p-4 bg-white/5 rounded-xl">
-            <input className="w-full p-3 bg-white/20 rounded-lg" placeholder="Role" value={exp.role} onChange={(e) => updateNestedField("experience", i, "role", e.target.value)} />
-            <input className="w-full p-3 bg-white/20 rounded-lg" placeholder="Company" value={exp.company} onChange={(e) => updateNestedField("experience", i, "company", e.target.value)} />
-            <input className="w-full p-3 bg-white/20 rounded-lg" placeholder="Duration (e.g., Jan 2023 - Present)" value={exp.duration} onChange={(e) => updateNestedField("experience", i, "duration", e.target.value)} />
-            <textarea className="w-full p-3 bg-white/20 rounded-lg h-24" placeholder="Key responsibilities and achievements..." value={exp.details} onChange={(e) => updateNestedField("experience", i, "details", e.target.value)} />
+          <div key={i} className="space-y-3 mb-6 p-4 bg-black/20 rounded-xl border border-cyan-400/30">
+            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Role" value={exp.role} onChange={(e) => updateNestedField("experience", i, "role", e.target.value)} />
+            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Company" value={exp.company} onChange={(e) => updateNestedField("experience", i, "company", e.target.value)} />
+            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Duration (e.g., Jan 2023 - Present)" value={exp.duration} onChange={(e) => updateNestedField("experience", i, "duration", e.target.value)} />
+            <textarea className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40 h-24" placeholder="Key responsibilities and achievements..." value={exp.details} onChange={(e) => updateNestedField("experience", i, "details", e.target.value)} />
           </div>
         ))}
         <button onClick={() => addNestedField("experience", { role: "", company: "", duration: "", details: "" })} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Experience</button>
 
         {/* CERTIFICATIONS */}
-        <h2 className="text-2xl font-bold mt-10 mb-4 text-cyan-300">Certifications</h2>
+        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Certifications</h2>
         {form.certifications.map((c, i) => (
-          <input key={i} className="w-full p-3 mb-3 bg-white/20 rounded-lg" placeholder="e.g., AWS Certified Solutions Architect" value={c} onChange={(e) => updateArrayField("certifications", i, e.target.value)} />
+          <input key={i} className="w-full p-3 mb-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="e.g., AWS Certified Solutions Architect" value={c} onChange={(e) => updateArrayField("certifications", i, e.target.value)} />
         ))}
         <button onClick={() => addArrayField("certifications", "")} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Certification</button>
 
         {/* ACHIEVEMENTS */}
-        <h2 className="text-2xl font-bold mt-10 mb-4 text-cyan-300">Achievements</h2>
+        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Achievements</h2>
         {form.achievements.map((a, i) => (
-          <input key={i} className="w-full p-3 mb-3 bg-white/20 rounded-lg" placeholder="e.g., Increased revenue by 40%" value={a} onChange={(e) => updateArrayField("achievements", i, e.target.value)} />
+          <input key={i} className="w-full p-3 mb-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="e.g., Increased revenue by 40%" value={a} onChange={(e) => updateArrayField("achievements", i, e.target.value)} />
         ))}
         <button onClick={() => addArrayField("achievements", "")} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Achievement</button>
 
         {/* PROJECTS */}
-        <h2 className="text-2xl font-bold mt-10 mb-4 text-cyan-300">Projects</h2>
+        <h2 className="text-xl font-bold mt-8 mb-4 text-cyan-300">Projects</h2>
         {form.projects.map((p, i) => (
-          <div key={i} className="space-y-3 mb-6 p-4 bg-white/5 rounded-xl">
-            <input className="w-full p-3 bg-white/20 rounded-lg" placeholder="Project Title" value={p.title} onChange={(e) => updateNestedField("projects", i, "title", e.target.value)} />
-            <textarea className="w-full p-3 bg-white/20 rounded-lg h-24" placeholder="Description, tech stack, impact..." value={p.description} onChange={(e) => updateNestedField("projects", i, "description", e.target.value)} />
+          <div key={i} className="space-y-3 mb-6 p-4 bg-black/20 rounded-xl border border-cyan-400/30">
+            <input className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40" placeholder="Project Title" value={p.title} onChange={(e) => updateNestedField("projects", i, "title", e.target.value)} />
+            <textarea className="w-full p-3 bg-black/30 border border-cyan-400/50 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40 h-24" placeholder="Description, tech stack, impact..." value={p.description} onChange={(e) => updateNestedField("projects", i, "description", e.target.value)} />
           </div>
         ))}
         <button onClick={() => addNestedField("projects", { title: "", description: "" })} className="text-cyan-400 hover:text-cyan-300 text-sm">+ Add Project</button>
@@ -240,7 +242,7 @@ export default function BuildResume() {
         {/* SUBMIT */}
         <button
           onClick={generatePDF}
-          className="mt-12 w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-5 rounded-xl text-2xl font-bold hover:from-cyan-400 hover:to-blue-500 transition shadow-2xl"
+          className="mt-8 w-full bg-cyan-600/70 backdrop-blur-sm border border-cyan-400/60 text-white py-4 rounded-lg text-xl font-bold hover:bg-cyan-500/80 hover:border-cyan-300 transition-all shadow-lg"
         >
           Generate Resume & Start Interview
         </button>

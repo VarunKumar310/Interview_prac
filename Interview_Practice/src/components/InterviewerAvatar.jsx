@@ -2,8 +2,8 @@ export default function InterviewerAvatar({
   isSpeaking = false, 
   size = "large" // "large" | "medium" | "small"
 }) {
-  // Using a placeholder avatar image from a public service
-  const interviewerImg = "https://ui-avatars.com/api/?name=AI+Interviewer&background=22d3ee&color=000&size=256";
+  // Using the local interviewer avatar image from public folder
+  const interviewerImg = "/interviewer-avatar.png";
   const sizeMap = {
     large: "w-80 h-80 md:w-96 md:h-96",
     medium: "w-48 h-48 md:w-64 md:h-64",

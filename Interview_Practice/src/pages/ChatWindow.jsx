@@ -8,16 +8,17 @@ import { useInterview } from "../utils/InterviewContext.jsx";
 import QuestionDisplay from "../components/QuestionDisplay";
 import InterviewerAvatar from "../components/InterviewerAvatar";
 import Timer from "../components/Timer";
+import VideoBackground from "../components/VideoBackground";
 
 // Utils
 import { speak, playTypingSound, playDoneSound } from "../utils/audio";
 import { analyzeSpeech } from "../utils/speech";
 
-// ===== Progress Bar (kept exactly as you had it) =====
+// ===== Progress Bar =====
 const ProgressBar = ({ progress }) => (
-  <div className="w-full bg-gray-200 h-2 mt-2 rounded">
+  <div className="w-full bg-black/30 backdrop-blur-sm border border-cyan-400/30 h-3 rounded-lg overflow-hidden">
     <div
-      className="bg-blue-600 h-2 transition-all duration-300 rounded"
+      className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full transition-all duration-500 shadow-lg"
       style={{ width: `${progress}%` }}
     />
   </div>
@@ -152,14 +153,18 @@ export default function ChatWindow() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white p-4 md:p-8">
-      {/* Progress Bar */}
-      <div className="max-w-3xl mx-auto">
-        <ProgressBar progress={progress} />
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-8">
+      <VideoBackground />
+      
+      {/* Main Container */}
+      <div className="bg-black/60 backdrop-blur-md border border-cyan-400/40 w-full max-w-6xl p-6 rounded-xl shadow-2xl relative z-10 max-h-[95vh] overflow-y-auto">
+        {/* Progress Bar */}
+        <div className="mb-6">
+          <ProgressBar progress={progress} />
+        </div>
 
-      {/* Main Content */}
-      <div className="max-w-3xl mx-auto mt-8 space-y-8">
+        {/* Main Content */}
+        <div className="space-y-6">
         {/* Interviewer Avatar */}
         <div className="flex justify-center">
           <InterviewerAvatar isSpeaking={isSpeaking} size="large" />
@@ -174,7 +179,7 @@ export default function ChatWindow() {
         </div>
 
         {/* Chat Messages */}
-        <div className="bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-6 h-96 overflow-y-auto border border-cyan-500/30">
+        <div className="bg-black/40 backdrop-blur-sm shadow-2xl rounded-2xl p-6 h-80 overflow-y-auto border border-cyan-400/50">
           {messages.map((msg, idx) => (
             <div
               key={idx}
@@ -197,7 +202,7 @@ export default function ChatWindow() {
         {/* Text Input */}
         <div className="flex gap-3">
           <input
-            className="flex-1 bg-white/20 border border-cyan-500/50 rounded-xl px-4 py-3 placeholder-cyan-200 focus:outline-none focus:border-cyan-300"
+            className="flex-1 bg-black/30 border border-cyan-400/50 rounded-lg px-4 py-3 text-white placeholder-gray-300 focus:outline-none focus:border-cyan-300 focus:bg-black/40"
             placeholder="Type your answer here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -205,21 +210,21 @@ export default function ChatWindow() {
           />
           <button
             onClick={sendText}
-            className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium transition"
+            className="bg-cyan-600/70 backdrop-blur-sm border border-cyan-400/60 text-white hover:bg-cyan-500/80 hover:border-cyan-300 px-6 py-3 rounded-lg font-semibold transition-all"
           >
             Send
           </button>
         </div>
 
         {/* Voice Controls */}
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 flex-wrap">
           <button
             onClick={startListening}
             disabled={isListening}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition ${
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm border ${
               isListening
-                ? "bg-green-600 animate-pulse"
-                : "bg-green-500 hover:bg-green-600"
+                ? "bg-green-600/70 border-green-400/60 animate-pulse text-white"
+                : "bg-green-600/70 border-green-400/60 text-white hover:bg-green-500/80 hover:border-green-300"
             }`}
           >
             {isListening ? "Listening..." : "Start Mic"}
@@ -228,17 +233,18 @@ export default function ChatWindow() {
           <button
             onClick={stopListening}
             disabled={!isListening}
-            className="bg-yellow-500 hover:bg-yellow-600 px-6 py-3 rounded-xl font-medium transition"
+            className="bg-yellow-600/70 backdrop-blur-sm border border-yellow-400/60 text-white hover:bg-yellow-500/80 hover:border-yellow-300 px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Stop Mic
           </button>
 
           <button
             onClick={endInterview}
-            className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-xl font-medium transition"
+            className="bg-red-600/70 backdrop-blur-sm border border-red-400/60 text-white hover:bg-red-500/80 hover:border-red-300 px-6 py-3 rounded-lg font-semibold transition-all"
           >
             End Interview
           </button>
+        </div>
         </div>
       </div>
     </div>
