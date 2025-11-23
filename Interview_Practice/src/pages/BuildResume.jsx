@@ -180,7 +180,7 @@ export default function BuildResume() {
     }
 
     doc.save("My_Resume.pdf");
-    navigate("/interview"); // Start interview
+    navigate("/difficulty"); // Select difficulty level
   };
 
   return (

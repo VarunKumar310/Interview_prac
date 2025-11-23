@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInterview } from "../utils/InterviewContext.jsx";
 import VideoBackground from "../components/VideoBackground";
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -12,8 +16,64 @@ export default function ResumeUpload() {
   const [fileName, setFileName] = useState("");
   const [resumeTextInput, setResumeTextInput] = useState("");
   const [error, setError] = useState("");
+  const [showAtsChecker, setShowAtsChecker] = useState(false);
 
-  const handlePDFUpload = (file) => {
+  const extractTextFromPDF = async (file) => {
+    const fileReader = new FileReader();
+    
+    return new Promise((resolve, reject) => {
+      fileReader.onload = async (e) => {
+        try {
+          const typedarray = new Uint8Array(e.target.result);
+          const loadingTask = pdfjsLib.getDocument({
+            data: typedarray,
+            // Use standard fonts to avoid font issues
+            standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
+          });
+          
+          const pdf = await loadingTask.promise;
+          let fullText = '';
+          
+          // Extract text from all pages
+          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent({
+              normalizeWhitespace: true,
+              disableCombineTextItems: false
+            });
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n';
+          }
+          
+          resolve(fullText.trim());
+        } catch (error) {
+          console.error('PDF extraction error:', error);
+          // Fallback: try a simpler approach
+          try {
+            const typedarray = new Uint8Array(e.target.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let fullText = '';
+            
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+              const page = await pdf.getPage(pageNum);
+              const textContent = await page.getTextContent();
+              const pageText = textContent.items.map(item => item.str).join(' ');
+              fullText += pageText + '\n';
+            }
+            
+            resolve(fullText.trim());
+          } catch (fallbackError) {
+            reject(fallbackError);
+          }
+        }
+      };
+      
+      fileReader.onerror = () => reject(new Error('Failed to read file'));
+      fileReader.readAsArrayBuffer(file);
+    });
+  };
+
+  const handlePDFUpload = async (file) => {
     if (!file) return;
     if (file.size > MAX_FILE_SIZE) {
       setError("File too large (max 5MB)");
@@ -26,7 +86,30 @@ export default function ResumeUpload() {
     
     setFileName(file.name);
     setResumeFile(file);
-    setError("PDF uploaded! Please copy your resume text from the PDF and paste it below for the best interview experience.");
+    setError("📄 Extracting text from PDF...");
+    
+    try {
+      const extractedText = await extractTextFromPDF(file);
+      
+      if (extractedText.trim().length > 0) {
+        setResumeTextInput(extractedText);
+        setError("✅ PDF text extracted successfully! Review the text below and click 'Submit Resume Text' for ATS analysis.");
+        
+        // Auto-submit if text is long enough
+        if (extractedText.trim().length >= 1000) {
+          setTimeout(() => {
+            setResumeText(extractedText.trim());
+            setShowAtsChecker(true);
+            setError("✅ Resume text extracted and submitted! You can now check your ATS score or continue to interview.");
+          }, 1000);
+        }
+      } else {
+        setError("⚠️ No text found in PDF. Please copy and paste your resume text manually.");
+      }
+    } catch (error) {
+      console.error('PDF processing error:', error);
+      setError("❌ Failed to extract text from PDF. Please copy and paste your resume text manually.");
+    }
   };
 
   const handleManualTextSubmit = () => {
@@ -35,18 +118,30 @@ export default function ResumeUpload() {
       return;
     }
     
-    if (resumeTextInput.trim().length < 600) {
-      setError("Resume text seems too short. Please ensure you've copied the complete resume (minimum 600 characters required).");
+    if (resumeTextInput.trim().length < 1000) {
+      setError("Resume text seems too short. Please ensure you've copied the complete resume (minimum 1000 characters required).");
       return;
     }
     
     setResumeText(resumeTextInput.trim());
-    navigate("/interview");
+    setShowAtsChecker(true);
+    setError("✅ Resume text submitted successfully! You can now check your ATS score or continue to interview.");
+  };
+
+  const checkAtsScore = () => {
+    if (!resumeTextInput.trim()) {
+      setError("Please enter your resume text before checking ATS score.");
+      return;
+    }
+    
+    // Store resume text for ATS scoring
+    localStorage.setItem('resumeText', resumeTextInput.trim());
+    navigate('/resume-score');
   };
 
   const proceedWithoutResume = () => {
     setResumeText("No resume provided");
-    navigate("/interview");
+    navigate("/difficulty");
   };
 
   return (
@@ -106,14 +201,14 @@ export default function ResumeUpload() {
             />
             <div className="flex justify-between items-center mt-4">
               <p className="text-sm text-gray-400">
-                Characters: {resumeTextInput.length} (minimum 600 required)
+                Characters: {resumeTextInput.length} (minimum 1000 required)
               </p>
               <button
                 onClick={handleManualTextSubmit}
-                disabled={resumeTextInput.trim().length < 600}
+                disabled={resumeTextInput.trim().length < 1000}
                 className="px-6 py-2 bg-cyan-600/70 backdrop-blur-sm border border-cyan-400/60 text-white hover:bg-cyan-500/80 hover:border-cyan-300 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Start Interview
+                Submit Resume Text
               </button>
             </div>
           </div>
@@ -125,6 +220,27 @@ export default function ResumeUpload() {
             <p className={`text-xl ${error.includes('uploaded!') ? 'text-green-300 bg-green-900/20 border-green-500/30' : 'text-red-300 bg-red-900/20 border-red-500/30'} backdrop-blur-sm px-4 py-3 rounded-lg border`}>
               {error}
             </p>
+          </div>
+        )}
+
+        {/* ATS Checker Button - Shows after text submission */}
+        {showAtsChecker && (
+          <div className="mb-6 text-center">
+            <button
+              onClick={checkAtsScore}
+              className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg transform hover:scale-105 mb-3"
+            >
+              📊 Check ATS Resume Score
+            </button>
+            <p className="text-sm text-gray-400 mb-4">
+              Get your resume scored by ATS algorithms
+            </p>
+            <button
+              onClick={() => navigate('/difficulty')}
+              className="px-6 py-2 bg-cyan-600/70 backdrop-blur-sm border border-cyan-400/60 text-white hover:bg-cyan-500/80 hover:border-cyan-300 rounded-lg font-semibold transition-all"
+            >
+              Continue to Interview
+            </button>
           </div>
         )}
 

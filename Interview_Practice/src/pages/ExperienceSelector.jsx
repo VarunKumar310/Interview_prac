@@ -33,7 +33,7 @@ const ExperienceSelector = () => {
     // Send experience to backend
     await api.post("/set-experience", { experience: selectedExp });
 
-    navigate("/difficulty");
+    navigate("/resume-upload");
   };
 
   return (

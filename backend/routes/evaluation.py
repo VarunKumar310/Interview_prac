@@ -13,10 +13,14 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# Dependency functions
+def get_interview_service() -> InterviewService:
+    return InterviewService()
+
 @router.post("/submit-answer", response_model=AnswerEvaluationResponse)
 async def submit_and_evaluate_answer(
     request: AnswerSubmissionRequest,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Submit an answer and get AI evaluation with scores and feedback"""
     try:
@@ -43,7 +47,7 @@ async def generate_follow_up_question(
     session_id: str,
     original_question: str,
     answer: str,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Generate an intelligent follow-up question based on the answer"""
     try:
@@ -69,7 +73,7 @@ async def generate_follow_up_question(
 @router.get("/evaluation-history/{session_id}", response_model=APIResponse)
 async def get_evaluation_history(
     session_id: str,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get evaluation history for a session"""
     try:
@@ -107,7 +111,7 @@ async def get_evaluation_history(
 async def batch_evaluate_answers(
     session_id: str,
     answers: List[Dict[str, Any]],
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Batch evaluate multiple answers (useful for bulk processing)"""
     try:
@@ -187,7 +191,7 @@ async def submit_manual_score(
     question_id: int,
     manual_scores: Dict[str, int],
     feedback: str = None,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Submit manual scores (for admin/reviewer override)"""
     try:

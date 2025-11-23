@@ -56,10 +56,20 @@ class InterviewAPI {
 
   // Authentication endpoints
   async login(email, password) {
-    return this.request('/login', {
+    return this.request('/api/auth/login', {
       method: 'POST',
       body: { email, password }
     });
+  }
+
+  async signup(email, password) {
+    console.log("🚀 API signup call with:", { email, password: "***" });
+    const result = await this.request('/api/auth/signup', {
+      method: 'POST',
+      body: { email, password }
+    });
+    console.log("📦 API signup result:", result);
+    return result;
   }
 
   async createGuestSession() {

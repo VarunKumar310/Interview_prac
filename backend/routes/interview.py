@@ -44,7 +44,7 @@ async def create_interview_session(
 @router.post("/setup", response_model=QuestionGenerationResponse)
 async def setup_interview(
     request: StartInterviewRequest,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Setup complete interview with role, experience, difficulty and generate questions"""
     try:
@@ -70,7 +70,7 @@ async def setup_interview(
 @router.post("/set-role", response_model=APIResponse)
 async def set_interview_role(
     request: RoleRequest,
-    session_service: SessionService = Depends()
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Set interview role (legacy endpoint for frontend compatibility)"""
     try:
@@ -94,7 +94,7 @@ async def set_interview_role(
 @router.post("/set-experience", response_model=APIResponse)
 async def set_experience_level(
     request: ExperienceRequest,
-    session_service: SessionService = Depends()
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Set experience level (legacy endpoint)"""
     try:
@@ -118,7 +118,7 @@ async def set_experience_level(
 @router.post("/set-difficulty", response_model=APIResponse)
 async def set_difficulty_level(
     request: DifficultyRequest,
-    session_service: SessionService = Depends()
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Set difficulty level (legacy endpoint)"""
     try:
@@ -143,7 +143,7 @@ async def set_difficulty_level(
 async def set_resume_text(
     request: ResumeUploadRequest,
     session_id: str,
-    session_service: SessionService = Depends()
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Set resume text for interview session"""
     try:
@@ -165,7 +165,7 @@ async def set_resume_text(
 @router.get("/next-question/{session_id}", response_model=Optional[InterviewQuestion])
 async def get_next_question(
     session_id: str,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get the next question in the interview"""
     try:
@@ -179,7 +179,7 @@ async def get_next_question(
 @router.get("/progress/{session_id}", response_model=APIResponse)
 async def get_interview_progress(
     session_id: str,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get interview progress information"""
     try:
@@ -202,8 +202,8 @@ async def get_interview_progress(
 async def generate_interview_questions(
     session_id: str,
     question_count: int = 10,
-    interview_service: InterviewService = Depends(),
-    session_service: SessionService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service),
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Generate questions for existing session"""
     try:
@@ -231,7 +231,7 @@ async def generate_interview_questions(
 @router.delete("/session/{session_id}", response_model=APIResponse)
 async def delete_interview_session(
     session_id: str,
-    session_service: SessionService = Depends()
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Delete an interview session"""
     try:
@@ -251,7 +251,7 @@ async def delete_interview_session(
 
 @router.get("/sessions/stats", response_model=APIResponse)
 async def get_session_statistics(
-    session_service: SessionService = Depends()
+    session_service: SessionService = Depends(get_session_service)
 ):
     """Get session statistics for monitoring"""
     try:

@@ -16,10 +16,14 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# Dependency functions
+def get_interview_service() -> InterviewService:
+    return InterviewService()
+
 @router.post("/generate", response_model=FinalReportResponse)
 async def generate_final_report(
     request: ReportGenerationRequest,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Generate comprehensive final interview report"""
     try:
@@ -39,7 +43,7 @@ async def generate_final_report(
 async def download_report(
     session_id: str,
     format_type: str = "json",
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Download report in specified format (JSON or PDF)"""
     try:
@@ -70,7 +74,7 @@ async def download_report(
 @router.get("/summary/{session_id}", response_model=APIResponse)
 async def get_report_summary(
     session_id: str,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get a quick summary of the interview results"""
     try:
@@ -107,7 +111,7 @@ async def get_report_summary(
 @router.get("/analytics/{session_id}", response_model=APIResponse)
 async def get_interview_analytics(
     session_id: str,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get detailed analytics and insights from the interview"""
     try:
@@ -152,7 +156,7 @@ async def get_interview_analytics(
 @router.post("/compare-sessions", response_model=APIResponse)
 async def compare_interview_sessions(
     session_ids: List[str],
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Compare multiple interview sessions for analytics"""
     try:

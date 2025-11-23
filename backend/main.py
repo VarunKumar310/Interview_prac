@@ -37,13 +37,13 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Starting AI Interview Backend...")
     logger.info("🤖 Initializing Gemini AI Service...")
     
-    # Verify Gemini connection
+    # Verify Gemini connection (optional - don't fail startup if API key is invalid)
     try:
         await gemini_service.test_connection()
         logger.info("✅ Gemini AI connection successful")
     except Exception as e:
-        logger.error(f"❌ Failed to connect to Gemini AI: {e}")
-        raise HTTPException(status_code=500, detail="AI service unavailable")
+        logger.warning(f"⚠️  Gemini AI connection test failed: {e}")
+        logger.warning("⚠️  The backend will start but AI features may not work properly")
     
     yield
     

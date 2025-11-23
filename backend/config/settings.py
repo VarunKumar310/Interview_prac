@@ -3,13 +3,21 @@ Application settings and configuration management
 Uses pydantic-settings for environment variable handling
 """
 
-from pydantic_settings import BaseSettings
-from typing import List
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from typing import List, Union
 import os
 from functools import lru_cache
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
+    
+    model_config = SettingsConfigDict(
+        env_file=None,  # Don't load from .env to avoid parsing errors
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore"
+    )
     
     # Basic FastAPI settings
     app_name: str = "AI Interview Practice Partner"
@@ -20,7 +28,7 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
     
-    # CORS settings
+    # CORS settings - use string and parse in __init__
     allowed_origins: List[str] = [
         "http://localhost:3000",
         "http://localhost:5173",  # Vite default
@@ -65,13 +73,30 @@ class Settings(BaseSettings):
     redoc_url: str = "/redoc"
     openapi_url: str = "/openapi.json"
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        """Parse allowed origins from string or list"""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v or [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+        ]
         
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
+        # Handle ALLOWED_ORIGINS from environment
+        if "allowed_origins" not in kwargs and os.getenv("ALLOWED_ORIGINS"):
+            origins_str = os.getenv("ALLOWED_ORIGINS", "")
+            if origins_str:
+                try:
+                    kwargs["allowed_origins"] = [o.strip() for o in origins_str.split(",")]
+                except:
+                    pass
         
         # Ensure required directories exist
         os.makedirs(self.data_directory, exist_ok=True)

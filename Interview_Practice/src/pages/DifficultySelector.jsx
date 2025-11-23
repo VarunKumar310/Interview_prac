@@ -31,7 +31,7 @@ const DifficultySelector = () => {
     // Save difficulty to backend session
     await api.post("/set-difficulty", { difficulty: selectedDifficulty });
 
-    navigate("/resume-upload");
+    navigate("/interview");
   };
 
   return (

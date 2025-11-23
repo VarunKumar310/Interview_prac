@@ -42,6 +42,10 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
 
+class SignupRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=6)
+
 class RoleRequest(BaseModel):
     role: str = Field(..., min_length=2, max_length=100)
 

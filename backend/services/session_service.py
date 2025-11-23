@@ -20,11 +20,11 @@ class SessionService:
         self.data_dir = Path("data/sessions")
         self.data_dir.mkdir(parents=True, exist_ok=True)
         
-        # Load existing sessions on startup
-        asyncio.create_task(self._load_sessions())
+        # Load existing sessions synchronously on startup
+        self._load_sessions_sync()
 
-    async def _load_sessions(self):
-        """Load existing sessions from disk"""
+    def _load_sessions_sync(self):
+        """Load existing sessions from disk synchronously"""
         try:
             if self.data_dir.exists():
                 for session_file in self.data_dir.glob("*.json"):

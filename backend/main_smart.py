@@ -50,6 +50,21 @@ class AnswerSubmission(BaseModel):
     answer: str
     sessionId: Optional[str] = None
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+
+# Simple user storage (in production, use proper database)
+VALID_USERS = {
+    "test@example.com": "password123",
+    "admin@interview.com": "admin123",
+    "demo@demo.com": "demo123"
+}
+
 # Base questions for different roles
 BASE_QUESTIONS = {
     "software_developer": [
@@ -218,6 +233,74 @@ async def health_check():
         "service": "ai-interview-backend-enhanced",
         "version": "2.0.0"
     }
+
+@app.post("/login")
+async def login(request: LoginRequest):
+    """User login endpoint"""
+    try:
+        email = request.email.lower()
+        password = request.password
+        
+        # Check credentials
+        if email in VALID_USERS and VALID_USERS[email] == password:
+            # Generate session token
+            session_token = f"token_{uuid.uuid4().hex[:16]}"
+            
+            logger.info(f"Successful login for {email}")
+            return {
+                "success": True,
+                "message": "Login successful",
+                "user_id": email,
+                "session_token": session_token
+            }
+        else:
+            logger.warning(f"Failed login attempt for {email}")
+            return {
+                "success": False,
+                "message": "Invalid email or password"
+            }
+            
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        return {
+            "success": False,
+            "message": "Login failed due to server error"
+        }
+
+@app.post("/signup")
+async def signup(request: SignupRequest):
+    """User signup endpoint"""
+    try:
+        email = request.email.lower()
+        password = request.password
+        
+        # Check if user already exists
+        if email in VALID_USERS:
+            logger.warning(f"Signup attempt with existing email: {email}")
+            return {
+                "success": False,
+                "message": "Email already exists. Please login instead."
+            }
+        
+        # Add new user
+        VALID_USERS[email] = password
+        
+        logger.info(f"New user registered: {email}")
+        return {
+            "success": True,
+            "message": "Account created successfully! You can now login.",
+            "data": {
+                "email": email,
+                "created": True
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Signup error: {e}")
+        return {
+            "success": False,
+            "message": "Account creation failed due to server error"
+        }
 
 @app.get("/api/interview/question")
 async def get_question(sessionId: Optional[str] = None):

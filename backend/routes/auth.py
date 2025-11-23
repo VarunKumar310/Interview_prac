@@ -4,7 +4,7 @@ Authentication routes for user login and session management
 
 from fastapi import APIRouter, HTTPException, Depends
 import logging
-from models.api_models import LoginRequest, LoginResponse, APIResponse
+from models.api_models import LoginRequest, SignupRequest, LoginResponse, APIResponse
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,45 @@ async def login(request: LoginRequest):
             message="Login failed due to server error",
             user_id=None,
             session_token=None
+        )
+
+@router.post("/signup", response_model=APIResponse)
+async def signup(request: SignupRequest):
+    """
+    User signup endpoint
+    Creates a new user account
+    """
+    try:
+        email = request.email.lower()
+        password = request.password
+        
+        # Check if user already exists
+        if email in VALID_USERS:
+            logger.warning(f"Signup attempt with existing email: {email}")
+            return APIResponse(
+                success=False,
+                message="Email already exists. Please login instead."
+            )
+        
+        # Add new user to the valid users (in production, save to database)
+        VALID_USERS[email] = password
+        
+        logger.info(f"New user registered: {email}")
+        return APIResponse(
+            success=True,
+            message="Account created successfully! You can now login.",
+            data={
+                "email": email,
+                "created": True
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Signup error: {e}")
+        return APIResponse(
+            success=False,
+            message="Account creation failed due to server error",
+            error=str(e)
         )
 
 @router.post("/guest-session", response_model=APIResponse)

@@ -5,6 +5,7 @@ Handles "What is bubble sort?", "Explain REST API", etc.
 
 from fastapi import APIRouter, HTTPException, Depends
 import logging
+from typing import List
 
 from models.api_models import GeneralQuestionRequest, GeneralQuestionResponse, APIResponse
 from services.interview_service import InterviewService
@@ -13,10 +14,14 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# Dependency functions
+def get_interview_service() -> InterviewService:
+    return InterviewService()
+
 @router.post("/ask", response_model=GeneralQuestionResponse)
 async def ask_general_question(
     request: GeneralQuestionRequest,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Ask general technical/career questions and get AI-powered answers"""
     try:
@@ -91,7 +96,7 @@ async def explain_technical_concept(
     concept: str,
     level: str = "intermediate",  # beginner, intermediate, advanced
     include_examples: bool = True,
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get detailed explanation of technical concepts with examples"""
     try:
@@ -119,7 +124,7 @@ async def review_code_snippet(
     code: str,
     language: str,
     focus_areas: List[str] = None,  # ["performance", "security", "readability", "best_practices"]
-    interview_service: InterviewService = Depends()
+    interview_service: InterviewService = Depends(get_interview_service)
 ):
     """Get AI code review with suggestions and improvements"""
     try:
